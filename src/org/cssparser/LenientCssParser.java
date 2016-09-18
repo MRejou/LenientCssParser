@@ -75,6 +75,11 @@ public class LenientCssParser {
 		tokenizer.wordChars('@', '@'); // less identifiers
 	}
 	
+	/**
+	 * Reads the next line of CSS.
+	 * @return line or <code>null</code> if end of stream was reached
+	 * @throws IOException if any IO error occured 
+	 */
 	public CssLine nextLine() throws IOException {
 		// Forgotten ';'
 		if (mustCloseBlock) {
