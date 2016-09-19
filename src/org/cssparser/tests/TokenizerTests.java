@@ -1,4 +1,4 @@
-package org.cssupdater.tests;
+package org.cssparser.tests;
 
 import static org.junit.Assert.*;
 

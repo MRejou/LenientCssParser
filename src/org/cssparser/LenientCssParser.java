@@ -42,6 +42,9 @@ public class LenientCssParser {
 	private CssLine parent;
 	// Implicit ';' hack
 	private boolean mustCloseBlock;
+
+	private char[] charBuffer = new char[256];
+	private String[] wordBuffer = new String[256];
 	
 	/**
 	 * Builds a new parser over the giver reader
@@ -77,10 +80,19 @@ public class LenientCssParser {
 	
 	/**
 	 * Reads the next line of CSS.
-	 * @return line or <code>null</code> if end of stream was reached
+	 * @return line or <code>null</code> if end of stream was reached, may be either :
+	 * <ul>
+	 * <li>Block opening {@link CssLine#BLOCK_OPENING}</li>
+	 * <li>Property declaration {@link CssLine#PROPERTY}</li>
+	 * <li>Block closure {@link CssLine#BLOCK_CLOSURE}</li>
+	 * <li>Unknown type, typically at end of streams {@link CssLine#UNKOWN}</li>
+	 * </ul>
 	 * @throws IOException if any IO error occured 
 	 */
 	public CssLine nextLine() throws IOException {
+		if (charBuffer == null)
+			return null; // End of stream was reached
+			
 		// Forgotten ';'
 		if (mustCloseBlock) {
 			CssLine cssLine = new CssLine(parent, CssLine.BLOCK_CLOSURE);
@@ -90,8 +102,6 @@ public class LenientCssParser {
 			return cssLine;
 		}
 		
-		char[] charBuffer = new char[256];
-		String[] wordBuffer = new String[256];
 		int length = 0;
 		
 		boolean comment = false;
@@ -153,10 +163,13 @@ public class LenientCssParser {
 			length++;
 		}
 
+		CssLine line = null;
 		if (length > 0)
-			return new CssLine(parent, charBuffer, wordBuffer, length); // Syntax problem
-		else
-			return null;
+			line = new CssLine(parent, charBuffer, wordBuffer, length); // Unexpected code is ending the file
+		
+		charBuffer = null;
+		wordBuffer = null;
+		return line;
 	}
 	
 }

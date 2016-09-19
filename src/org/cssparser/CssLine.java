@@ -24,6 +24,7 @@ package org.cssparser;
  * <li>Block opening {@link #BLOCK_OPENING}</li>
  * <li>Property declaration {@link #PROPERTY}</li>
  * <li>Block closure {@link #BLOCK_CLOSURE}</li>
+ * <li>Unknown type, typically at end of streams {@link CssLine#UNKOWN}</li>
  * </ul>
  * @author Matthieu Rejou
  */
@@ -49,8 +50,8 @@ public class CssLine {
 	
 	private final CssLine parent;
 	private final int type;
-	private final String declaration;
-	private final String value;
+	private String declaration;
+	private String value;
 	
 	/**
 	 * Constructor necessary for block closure after an implicit ';'.
@@ -174,6 +175,21 @@ public class CssLine {
 	}
 
 	/**
+	 * Sets the declaration part of the line.
+	 * @param declaration css formatted code
+	 * @see #getDeclaration()
+	 * @throws UnsupportedOperationException if {@link #getType()} is {@link #BLOCK_CLOSURE}
+	 * @throws NullPointerException if argument is <code>null</code>
+	 */
+	public void setDeclaration(String declaration) {
+		if (type == BLOCK_CLOSURE)
+			throw new UnsupportedOperationException();
+		if (declaration == null)
+			throw new NullPointerException("declaration");
+		this.declaration = declaration;
+	}
+
+	/**
 	 * Gets the property value.
 	 * @return formatted code after the <code>':'</code>,
 	 * <code>null</code> if <code>':'</code> is missing of if line is not a {@link #PROPERTY} 
@@ -181,7 +197,19 @@ public class CssLine {
 	public String getValue() {
 		return value;
 	}
-	
+
+	/**
+	 * Sets the property value.
+	 * @return formatted code after the <code>':'</code>,
+	 * if <code>null</code> the <code>':'</code> will be omitted in {@link #toCssCode()} result
+	 * @throws UnsupportedOperationException if {@link #getType()} is not {@link #PROPERTY}
+	 */
+	public void setValue(String value) {
+		if (type == PROPERTY)
+			throw new UnsupportedOperationException();
+		this.value = value;
+	}
+
 	/**
 	 * Converts this line to a CSS formatted code.
 	 * @return CSS code
