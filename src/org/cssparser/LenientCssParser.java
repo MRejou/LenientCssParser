@@ -43,8 +43,8 @@ public class LenientCssParser {
 	// Implicit ';' hack
 	private boolean mustCloseBlock;
 
-	private char[] charBuffer = new char[256];
-	private String[] wordBuffer = new String[256];
+	private char[] charBuffer = new char[64];
+	private String[] wordBuffer = new String[64];
 	
 	/**
 	 * Builds a new parser over the giver reader
@@ -127,8 +127,8 @@ public class LenientCssParser {
 
 			// Buffers writing
 			if (length == charBuffer.length) {
-				charBuffer = Arrays.copyOf(charBuffer, charBuffer.length + 256);
-				wordBuffer = Arrays.copyOf(wordBuffer, wordBuffer.length + 256);
+				charBuffer = Arrays.copyOf(charBuffer, charBuffer.length + 64);
+				wordBuffer = Arrays.copyOf(wordBuffer, wordBuffer.length + 64);
 			}
 			charBuffer[length] = c;
 			wordBuffer[length] = token;	
